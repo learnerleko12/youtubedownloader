@@ -62,10 +62,10 @@ class YouTubeThumbnailApp(QWidget):
             with YoutubeDL(ydl_opts_info) as ydl:
                 info = ydl.extract_info(url, download=False)
                 title = info.get('title', 'youtube_video')
-            default_path = f'C:/'+title+'.mp4'
-            save_path, _ = QFileDialog.getSaveFileName(self, '저장 위치 선택', default_path, 'MP4 Files (*.mp4);;All Files (*)')
-            if not save_path:
+            folder = QFileDialog.getExistingDirectory(self, '저장 폴더 선택', 'C:/')
+            if not folder:
                 return
+            save_path = f'{folder}/{title}.mp4'
             ydl_opts = {
                 'outtmpl': save_path,
                 'format': 'bestvideo+bestaudio/best',
@@ -74,7 +74,7 @@ class YouTubeThumbnailApp(QWidget):
             }
             with YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
-            QMessageBox.information(self, '완료', '영상이 성공적으로 저장되었습니다!')
+            QMessageBox.information(self, '완료', f'영상이 성공적으로 저장되었습니다!\n{save_path}')
         except Exception as e:
             QMessageBox.critical(self, '에러', f'영상 다운로드 중 오류 발생: {e}')
 
